@@ -31,8 +31,50 @@ body{
     font-weight: 100;
 }
 
-.date-container #am-pm{
+.searchbar{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.searchbar input{
+    background: bisque;
+    height: 6vh;
+    width: 10rem;
+    border: 3px solid wheat;
+    margin: 1rem 0 1rem 0.5rem;
+    padding: 1rem;
+    border-radius: 30px;
+}
+
+button:hover{
+    background: rgb(156, 156, 156);
+    color: black;
+}
+
+.search-button{
+    border: 1px solid black;
+    margin-left: 1em;
+    margin-top: 1.2em;
+    height: 3em;
+    width: 3em;
+    color: white;
+    background: rgb(119, 116, 116);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.date-container .add{
+    margin-left: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.date-container .seconds{
     font-size: 30px;
+}
+
+.date-container #am-pm{
+    font-size: 40px;
     margin-left: 20px;
 }
 
@@ -100,7 +142,7 @@ body{
 }
 
 .future-forecast .today .other{
-    margin: 3vh 3vw;
+    margin: 6vh 1.5vw;
 }
 .future-forecast .today .day{
     padding: 15px;
@@ -127,7 +169,7 @@ body{
     border-radius: 25px;
     /* width : 20vw; */
     padding: 5px;
-    margin: 1vh 1.2vw;
+    margin: 1vh 1vw;
 }
 
 .weather-forecast .weather-forecast-item .day{
@@ -148,11 +190,27 @@ body{
     margin: 3px;
 }
 
+.new-button{
+    color: rgb(255, 178, 36);
+    background: none;
+    font-size: 20px;
+    border: none;
+    border-radius: 30px;
+}
+
+.new-button:hover{
+    background: none;
+    color: rgb(247, 222, 6);
+}
+
 @media only screen and (max-width: 1260px) {
     .future-forecast{
         justify-content: start;
         align-items: none;
         overflow-y:scroll;
+    }
+    .future-forecast .today .other{
+        margin: 1.5vh 2vw;
     }
 }
 
@@ -184,4 +242,34 @@ body{
 .future-forecast .today .temp{
     font-size: 0.85rem;
 }
+
+.place-container{
+    flex-direction: column;
+}
+
+.place-container input{
+    height: 1rem;
+    margin-top: 0.25rem;
+}
+
+.place-container .search-button{
+    margin-top: 0.3rem;
+}
+
+.place-container .time-zone{
+    font-size: 25px;
+}
+
+}
+
+@media only screen and (max-width: 650px) {
+    .place-container{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    /* .place-container input{
+        margin-left: 20vw;
+    } */
 }

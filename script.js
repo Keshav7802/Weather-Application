@@ -11,22 +11,33 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 
 const API_key = '32c294b9724dd792e39e2f3e9f4016a4';
 
+let dt = new Date();
+console.log(dt);
+
 // This function will be called every one sec.
- setInterval(() => {
-     const time = new Date();
-     const month = time.getMonth();
-     const date = time.getDate();
-     const day = time.getDay();
-     const year = time.getFullYear();
-     const hour = time.getHours();
-     const minutes = time.getMinutes();
-     const _hours = (hour > 12) ? hour % 12 : hour;
-     const ampm = (hour > 12) ? 'PM' : 'AM';
-     timeEl.innerHTML = ((_hours < 10) ? ('0' + _hours) : _hours) + ':' + ((minutes < 10) ? ('0' + minutes) : minutes) + ' ' + `<span id="am-pm">${ampm}</span>`;
-     dateEl.innerHTML = days[day] + ', ' + months[month] + ' ' + date + ', ' + year;
- }, 1000);
+funcID = setInterval(() => {
+    const time = new Date();
+    const month = time.getMonth();
+    const date = time.getDate();
+    const day = time.getDay();
+    const year = time.getFullYear();
+    const hour = time.getHours();
+    const minutes = time.getMinutes();
+    const seconds = time.getSeconds();
+    const _hours = (hour > 12) ? hour % 12 : hour;
+    const ampm = (hour > 12) ? 'PM' : 'AM';
+    timeEl.innerHTML = ((_hours < 10) ? ('0' + _hours) : _hours) + ':' + ((minutes < 10) ? ('0' + minutes) : minutes) + ' ' + `<span class="seconds">${((seconds < 10) ? ('0' + seconds) : seconds)}</><span id="am-pm">${ampm}</span>`;
+    dateEl.innerHTML = days[day] + ', ' + months[month] + ' ' + date + ', ' + year;
+}, 1000);
 
 getWeatherData();
+getCityWeatherData();
+document.querySelector('.search-button').addEventListener('click', () => { search() });
+document.querySelector('.search').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        search();
+    }
+});
 
 function getWeatherData() {
     navigator.geolocation.getCurrentPosition((success) => {
@@ -38,7 +49,42 @@ function getWeatherData() {
         });
     });
 }
- 
+
+function getCityWeatherData(city) {
+    if (city === 'Current Location') getWeatherData();
+    console.log('Executing getCityWeatherData');
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${API_key}`).then(resp => resp.json()).then(success => {
+        console.log(success);
+        let { lat, lon } = success[0];
+        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=hourly,minutely&appid=${API_key}`).then(res => res.json()).then(data => {
+            console.log(data);
+            showWeatherData(data);
+            updatedatetime(data);
+        });
+    });
+}
+
+function updatedatetime(data) {
+    clearInterval(funcID);
+    let timoff = data.timezone_offset;
+    // console.log(timoff);
+    // console.log(time);
+    funcID = setInterval(() => {
+        time = calcTime(timoff);
+        const month = time.getMonth();
+        const date = time.getDate();
+        const day = time.getDay();
+        const year = time.getFullYear();
+        const hour = time.getHours();
+        const minutes = time.getMinutes();
+        const seconds = time.getSeconds();
+        const _hours = (hour > 12) ? hour % 12 : hour;
+        const ampm = (hour > 12) ? 'PM' : 'AM';
+        timeEl.innerHTML = ((_hours < 10) ? ('0' + _hours) : _hours) + ':' + ((minutes < 10) ? ('0' + minutes) : minutes) + ' ' + `<span class="seconds">${((seconds < 10) ? ('0' + seconds) : seconds)}</><span id="am-pm">${ampm}</span>`;
+        dateEl.innerHTML = days[day] + ', ' + months[month] + ' ' + date + ', ' + year;
+    }, 1000);
+}
+
 function showWeatherData(data) {
     let { humidity, pressure, sunrise, sunset, wind_speed } = data.current;
 
@@ -89,4 +135,31 @@ function showWeatherData(data) {
         }
     });
     weatherForecastEl.innerHTML = otherDayForecast;
+}
+
+function search() {
+    getCityWeatherData(document.querySelector('.search').value);
+    document.querySelector('.search').value = '';
+    const html = `<button class="new-button" onClick="remove()">Get back to Current Location</button>`;
+    // Grab the element containing your "two" class
+    var isthere = document.querySelector('.new-button');
+    console.log(isthere);
+    if (isthere === null) {
+        const two = document.querySelector('.searchbar');
+        two.insertAdjacentHTML('afterend', html);
+    }
+}
+
+function remove() {
+    console.log('remove is executing');
+    const two = document.querySelector('.new-button');
+    two.remove();
+    getWeatherData();
+}
+
+function calcTime(offset) {
+    d = new Date();
+    utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    nd = new Date(utc + (1000 * offset));
+    return nd;
 }
